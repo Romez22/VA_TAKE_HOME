@@ -1,0 +1,24 @@
+# Gradle / build artifacts
+.gradle/
+build/
+**/build/
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+captures/
+
+# Kotlin Native / KMP
+*.klib
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+*.xcworkspace/xcuserdata/
+**/xcuserdata/
+DerivedData/
+Pods/
+
+# macOS
+.DS_Store

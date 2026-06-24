@@ -1,0 +1,188 @@
+package com.virginactive.shared.data.timetable
+
+import com.virginactive.shared.data.auth.apiErrorJson
+import com.virginactive.shared.data.auth.respondJson
+import com.virginactive.shared.data.remote.ApiConfig
+import com.virginactive.shared.data.remote.createHttpClient
+import com.virginactive.shared.domain.booking.ClassType
+import com.virginactive.shared.domain.error.AppResult
+import com.virginactive.shared.domain.error.DomainError
+import com.virginactive.shared.domain.timetable.TimetableRepository
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
+
+class TimetableRepositoryTest {
+
+    private val config = ApiConfig(baseUrl = "http://test.local")
+
+    private fun timetableRepository(engine: MockEngine): TimetableRepository {
+        val client = createHttpClient(engine = engine, config = config, enableLogging = false)
+        val api = TimetableApi(client)
+        return TimetableRepositoryImpl(api)
+    }
+
+    @Test
+    fun fullWeekDecodesToSevenDaysWithClasses() = runTest {
+        val engine = MockEngine { _ -> respondJson(TIMETABLE_WEEK) }
+        val repo = timetableRepository(engine)
+
+        val result = repo.getWeek(CLUB_ID, SELECTED_DATE)
+
+        assertIs<AppResult.Ok<*>>(result, "200 full-week timetable -> Ok(WeeklyTimetable)")
+        val week = (result as AppResult.Ok).value
+        assertEquals(7, week.days.size, "full week = exactly 7 day groups (TIME-02)")
+        assertTrue(
+            week.days.sumOf { it.classes.size } > 0,
+            "the decoded week carries classes (TIME-01)",
+        )
+    }
+
+    @Test
+    fun groupWorkoutTypeMapsToGroupWorkoutNotUnknown() = runTest {
+        val engine = MockEngine { _ -> respondJson(TIMETABLE_WEEK) }
+        val repo = timetableRepository(engine)
+
+        val result = repo.getWeek(CLUB_ID, SELECTED_DATE)
+
+        assertIs<AppResult.Ok<*>>(result, "200 -> Ok")
+        val week = (result as AppResult.Ok).value
+        val groupWorkoutClasses = week.days
+            .flatMap { it.classes }
+            .filter { it.title == "Power Circuit" || it.title == "Group Strength" }
+        assertTrue(groupWorkoutClasses.isNotEmpty(), "fixture carries groupWorkout classes")
+        assertTrue(
+            groupWorkoutClasses.all { it.type == ClassType.GROUP_WORKOUT },
+            "groupWorkout maps to GROUP_WORKOUT, never UNKNOWN (Pitfall 1b)",
+        )
+    }
+
+    @Test
+    fun invalidDate400MapsToValidationFromErrorField() = runTest {
+        val engine = MockEngine { _ ->
+            respondJson(apiErrorJson("InvalidDate", code = null), HttpStatusCode.BadRequest)
+        }
+        val repo = timetableRepository(engine)
+
+        val result = repo.getWeek(CLUB_ID, "not-a-date")
+
+        assertEquals(
+            AppResult.Err(DomainError.Validation("InvalidDate")),
+            result,
+            "400 {\"error\":\"InvalidDate\"} -> Validation(\"InvalidDate\") read from `error`",
+        )
+    }
+
+    @Test
+    fun dateOutOfRange400MapsToValidationFromErrorField() = runTest {
+        val engine = MockEngine { _ ->
+            respondJson(apiErrorJson("DateOutOfRange", code = null), HttpStatusCode.BadRequest)
+        }
+        val repo = timetableRepository(engine)
+
+        val result = repo.getWeek(CLUB_ID, "2030-01-01")
+
+        assertEquals(
+            AppResult.Err(DomainError.Validation("DateOutOfRange")),
+            result,
+            "400 {\"error\":\"DateOutOfRange\"} -> Validation(\"DateOutOfRange\")",
+        )
+    }
+
+    @Test
+    fun unauthorizedMapsToErrUnauthorized() = runTest {
+        val engine = MockEngine { _ ->
+            respondJson(apiErrorJson("Unauthorized", code = null), HttpStatusCode.Unauthorized)
+        }
+        val repo = timetableRepository(engine)
+
+        val result = repo.getWeek(CLUB_ID, SELECTED_DATE)
+
+        assertEquals(AppResult.Err(DomainError.Unauthorized), result, "401 -> Err(Unauthorized)")
+    }
+
+    @Test
+    fun serverErrorMapsToErrServer() = runTest {
+        val engine = MockEngine { _ ->
+            respondJson(apiErrorJson("server_error", "ChaosFailure"), HttpStatusCode.InternalServerError)
+        }
+        val repo = timetableRepository(engine)
+
+        val result = repo.getWeek(CLUB_ID, SELECTED_DATE)
+
+        assertEquals(AppResult.Err(DomainError.Server), result, "500 -> Err(Server); nothing thrown")
+    }
+
+    private companion object {
+        const val CLUB_ID = "club_sea_point"
+        const val SELECTED_DATE = "2026-06-23"
+
+        val TIMETABLE_WEEK = """
+        {
+          "clubId": "club_sea_point",
+          "weekStart": "2026-06-22",
+          "weekEnd": "2026-06-28",
+          "selectedDate": "2026-06-23",
+          "days": [
+            { "date": "2026-06-22", "classes": [
+              { "classId": "sp-morning-yoga::2026-06-22", "clubId": "club_sea_point",
+                "title": "Morning Yoga", "trainer": "Naledi Botha", "type": "yoga",
+                "startsAt": "2026-06-22T06:00:00+02:00", "endsAt": "2026-06-22T07:00:00+02:00",
+                "spots": 20, "available": 8, "waitlistCount": 0,
+                "status": "available", "userBookingStatus": "none" }
+            ] },
+            { "date": "2026-06-23", "classes": [
+              { "classId": "sp-aqua-lanes::2026-06-23", "clubId": "club_sea_point",
+                "title": "Aqua Lanes", "trainer": "Naledi Botha", "type": "swimming",
+                "startsAt": "2026-06-23T06:30:00+02:00", "endsAt": "2026-06-23T07:15:00+02:00",
+                "spots": 25, "available": 3, "waitlistCount": 0,
+                "status": "available", "userBookingStatus": "none" },
+              { "classId": "sp-power-circuit::2026-06-23", "clubId": "club_sea_point",
+                "title": "Power Circuit", "trainer": "Thabo M.", "type": "groupWorkout",
+                "startsAt": "2026-06-23T12:00:00+02:00", "endsAt": "2026-06-23T12:45:00+02:00",
+                "spots": 18, "available": 0, "waitlistCount": 4,
+                "status": "full", "userBookingStatus": "waitlisted" },
+              { "classId": "sp-lunchtime-spin::2026-06-23", "clubId": "club_sea_point",
+                "title": "Lunchtime Spin", "trainer": "Thabo M.", "type": "spin",
+                "startsAt": "2026-06-23T13:00:00+02:00", "endsAt": "2026-06-23T13:45:00+02:00",
+                "spots": 20, "available": 5, "waitlistCount": 0,
+                "status": "available", "userBookingStatus": "booked" }
+            ] },
+            { "date": "2026-06-24", "classes": [
+              { "classId": "sp-hiit-blast::2026-06-24", "clubId": "club_sea_point",
+                "title": "HIIT Blast", "trainer": "Sipho K.", "type": "hiit",
+                "startsAt": "2026-06-24T07:00:00+02:00", "endsAt": "2026-06-24T07:30:00+02:00",
+                "spots": 16, "available": 6, "waitlistCount": 0,
+                "status": "available", "userBookingStatus": "none" }
+            ] },
+            { "date": "2026-06-25", "classes": [
+              { "classId": "sp-evening-pilates::2026-06-25", "clubId": "club_sea_point",
+                "title": "Evening Pilates", "trainer": "Lerato D.", "type": "pilates",
+                "startsAt": "2026-06-25T18:00:00+02:00", "endsAt": "2026-06-25T19:00:00+02:00",
+                "spots": 15, "available": 0, "waitlistCount": 2,
+                "status": "full", "userBookingStatus": "none" }
+            ] },
+            { "date": "2026-06-26", "classes": [
+              { "classId": "sp-group-strength::2026-06-26", "clubId": "club_sea_point",
+                "title": "Group Strength", "trainer": "Thabo M.", "type": "groupWorkout",
+                "startsAt": "2026-06-26T08:00:00+02:00", "endsAt": "2026-06-26T08:45:00+02:00",
+                "spots": 18, "available": 9, "waitlistCount": 0,
+                "status": "available", "userBookingStatus": "none" }
+            ] },
+            { "date": "2026-06-27", "classes": [
+              { "classId": "sp-lane-swim::2026-06-27", "clubId": "club_sea_point",
+                "title": "Lane Swim", "trainer": "Naledi Botha", "type": "swimming",
+                "startsAt": "2026-06-27T09:00:00+02:00", "endsAt": "2026-06-27T09:45:00+02:00",
+                "spots": 25, "available": 12, "waitlistCount": 0,
+                "status": "available", "userBookingStatus": "none" }
+            ] },
+            { "date": "2026-06-28", "classes": [] }
+          ]
+        }
+        """.trimIndent()
+    }
+}

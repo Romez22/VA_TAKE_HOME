@@ -1,0 +1,161 @@
+{
+  "blocks": [
+    {
+      "type": "greeting",
+      "title": "Good afternoon, Avid"
+    },
+    {
+      "type": "hero",
+      "title": "Crush your goals this week",
+      "subtitle": "You've attended 3 classes — 1 more to hit your weekly target."
+    },
+    {
+      "type": "myClub",
+      "name": "Virgin Active Sea Point",
+      "addressLine": "96 Beach Rd, Sea Point, Cape Town, 8005",
+      "openingHoursToday": "05:00 – 22:00",
+      "phoneNumber": "+27 21 439 1240"
+    },
+    {
+      "type": "classCarousel",
+      "title": "Your week",
+      "viewAllAction": {
+        "type": "openTimetable",
+        "clubId": "club_sea_point"
+      },
+      "items": [
+        {
+          "id": "sp-lunchtime-spin::2026-06-24",
+          "title": "Lunchtime Spin",
+          "subtitle": "Thabo Ndlovu",
+          "imageRef": "spin",
+          "startsAt": "2026-06-24T12:00:00+02:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_sea_point",
+            "classId": "sp-lunchtime-spin::2026-06-24"
+          }
+        },
+        {
+          "id": "sp-evening-flow::2026-06-24",
+          "title": "Evening Flow Yoga",
+          "subtitle": "Lerato Molefe",
+          "imageRef": "yoga",
+          "startsAt": "2026-06-24T17:00:00+02:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_sea_point",
+            "classId": "sp-evening-flow::2026-06-24"
+          }
+        },
+        {
+          "id": "sp-total-body-hiit::2026-06-25",
+          "title": "Total Body HIIT",
+          "subtitle": "Sipho Dlamini",
+          "imageRef": "hiit",
+          "startsAt": "2026-06-25T06:00:00+02:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_sea_point",
+            "classId": "sp-total-body-hiit::2026-06-25"
+          }
+        },
+        {
+          "id": "sp-group-power::2026-06-25",
+          "title": "Group Power",
+          "subtitle": "Andile Mkhize",
+          "imageRef": "groupWorkout",
+          "startsAt": "2026-06-25T12:00:00+02:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_sea_point",
+            "classId": "sp-group-power::2026-06-25"
+          }
+        },
+        {
+          "id": "sp-rpm-spin::2026-06-26",
+          "title": "RPM Spin",
+          "subtitle": "Thabo Ndlovu",
+          "imageRef": "spin",
+          "startsAt": "2026-06-26T17:30:00+02:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_sea_point",
+            "classId": "sp-rpm-spin::2026-06-26"
+          }
+        }
+      ]
+    },
+    {
+      "type": "myRewards",
+      "title": "Your rewards",
+      "items": [
+        {
+          "id": "reward_001",
+          "title": "Free smoothie at the juice bar",
+          "subtitle": "Show this at any Virgin Active café",
+          "imageRef": "reward_smoothie",
+          "badge": "Expires Sunday"
+        },
+        {
+          "id": "reward_002",
+          "title": "20% off retail at any club",
+          "subtitle": "Valid on apparel and accessories",
+          "imageRef": "reward_retail"
+        },
+        {
+          "id": "reward_003",
+          "title": "Bring a friend free this month",
+          "subtitle": "One guest pass, any location",
+          "imageRef": "reward_guest",
+          "badge": "Limited time"
+        }
+      ]
+    },
+    {
+      "type": "myGoals",
+      "title": "Your goals",
+      "items": [
+        {
+          "id": "goal_001",
+          "title": "Attend 4 classes per week",
+          "subtitle": "3 of 4 this week",
+          "imageRef": "goal_classes"
+        },
+        {
+          "id": "goal_002",
+          "title": "Complete 10 spin classes this month",
+          "subtitle": "7 of 10 completed",
+          "imageRef": "goal_spin"
+        },
+        {
+          "id": "goal_003",
+          "title": "Try a new class type",
+          "subtitle": "You haven't tried Pilates yet!",
+          "imageRef": "goal_explore"
+        }
+      ]
+    },
+    {
+      "type": "promotion",
+      "title": "Summer Shape-Up Challenge",
+      "subtitle": "Join 12 classes in 4 weeks and earn bonus rewards. Starts 1 June.",
+      "imageRef": "promo_summer_challenge"
+    },
+    {
+      "type": "experimental",
+      "payload": {
+        "kind": "futureFeature",
+        "title": "Coming soon",
+        "data": {
+          "foo": "bar"
+        }
+      }
+    }
+  ]
+}

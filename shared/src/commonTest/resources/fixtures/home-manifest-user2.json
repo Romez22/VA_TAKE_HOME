@@ -1,0 +1,121 @@
+{
+  "blocks": [
+    {
+      "type": "greeting",
+      "title": "Welcome, Competitive"
+    },
+    {
+      "type": "hero",
+      "title": "Your fitness journey starts here",
+      "subtitle": "Explore classes at your club and book your first session."
+    },
+    {
+      "type": "myClub",
+      "name": "Virgin Active Aldersgate",
+      "addressLine": "1 Aldersgate St, Barbican, London EC1A 4JQ",
+      "openingHoursToday": "06:30 – 22:00",
+      "phoneNumber": "+44 20 7600 5130"
+    },
+    {
+      "type": "promotion",
+      "title": "Welcome to Virgin Active",
+      "subtitle": "Your first month bonus — attend 3 classes and unlock a free guest pass.",
+      "imageRef": "promo_welcome_bonus"
+    },
+    {
+      "type": "classCarousel",
+      "title": "Your week",
+      "viewAllAction": {
+        "type": "openTimetable",
+        "clubId": "club_aldersgate"
+      },
+      "items": [
+        {
+          "id": "ag-spin-burn::2026-06-24",
+          "title": "Spin & Burn",
+          "subtitle": "James Fletcher",
+          "imageRef": "spin",
+          "startsAt": "2026-06-24T17:30:00+01:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_aldersgate",
+            "classId": "ag-spin-burn::2026-06-24"
+          }
+        },
+        {
+          "id": "ag-lunchtime-pilates::2026-06-25",
+          "title": "Lunchtime Pilates",
+          "subtitle": "Charlotte Webb",
+          "imageRef": "pilates",
+          "startsAt": "2026-06-25T12:00:00+01:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_aldersgate",
+            "classId": "ag-lunchtime-pilates::2026-06-25"
+          }
+        },
+        {
+          "id": "ag-hiit-circuit::2026-06-26",
+          "title": "HIIT Circuit",
+          "subtitle": "Marcus Campbell",
+          "imageRef": "hiit",
+          "startsAt": "2026-06-26T06:30:00+01:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_aldersgate",
+            "classId": "ag-hiit-circuit::2026-06-26"
+          }
+        },
+        {
+          "id": "ag-friday-flow::2026-06-26",
+          "title": "Friday Flow",
+          "subtitle": "Emily Hartwell",
+          "imageRef": "yoga",
+          "startsAt": "2026-06-26T17:00:00+01:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_aldersgate",
+            "classId": "ag-friday-flow::2026-06-26"
+          }
+        },
+        {
+          "id": "ag-endurance-spin::2026-06-27",
+          "title": "Endurance Spin",
+          "subtitle": "James Fletcher",
+          "imageRef": "spin",
+          "startsAt": "2026-06-27T08:00:00+01:00",
+          "actionLabel": "View",
+          "actionRef": {
+            "type": "openClass",
+            "clubId": "club_aldersgate",
+            "classId": "ag-endurance-spin::2026-06-27"
+          }
+        }
+      ]
+    },
+    {
+      "type": "myGoals",
+      "title": "Your goals",
+      "items": [
+        {
+          "id": "goal_get_started",
+          "title": "Set your first goal"
+        }
+      ]
+    },
+    {
+      "type": "experimental",
+      "payload": {
+        "kind": "futureFeature",
+        "title": "Coming soon",
+        "data": {
+          "foo": "bar"
+        }
+      }
+    }
+  ]
+}
